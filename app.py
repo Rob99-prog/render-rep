@@ -1,31 +1,37 @@
 import streamlit as st
 import random
-import pandas as pd
+from collections import Counter
 
 st.header('Lanzar una moneda')
 
+# Slider (key única)
+n = st.slider(
+    '¿Cuántas veces lanzar la moneda?',
+    1, 1000, 10,
+    key='num_lanzamientos_slider'
+)
 
-n = st.slider('¿Cuántas veces lanzar la moneda?', min_value=1, max_value=1000, value=10)
-
-
+# Inicializa session_state
 if 'resultados' not in st.session_state:
     st.session_state.resultados = []
 
-
-if st.button('¡Lanzar!'):
+# Botón (key única)
+if st.button('¡Lanzar!', key='btn_lanzar'):
     st.session_state.resultados = [
         'Cara' if random.random() < 0.5 else 'Cruz'
         for _ in range(n)
     ]
 
-
+# Si hay resultados, muéstralos
 if st.session_state.resultados:
-    conteo = pd.Series(st.session_state.resultados).value_counts()
+    conteo = Counter(st.session_state.resultados)
     st.write(f"Resultados de {len(st.session_state.resultados)} lanzamientos:")
     st.bar_chart(conteo)
 
-
-    if st.checkbox('Ver tabla de resultados'):
-        st.table(pd.DataFrame({'Resultado': st.session_state.resultados}))
+    # Checkbox (key única)
+    if st.checkbox('Ver tabla de resultados', key='chk_tabla'):
+        st.table([{'Resultado': r} for r in st.session_state.resultados])
 else:
     st.write('Aún sin lanzamientos.')
+
+
